@@ -1,0 +1,340 @@
+package trainstation;
+
+import java.util.Formatter;
+import java.lang.String;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Formatter;
+import java.util.Scanner;
+
+
+public class TrainStation 
+{
+       private static final int WAITING_ROOM_CAPACITY = 50;
+        
+        static Passenger[] waitingRoom = new Passenger[WAITING_ROOM_CAPACITY];
+        
+    private static String[] Train;
+        
+
+ 
+    public static void main(String[] args) 
+    {
+         createSeats(Train);
+        //repeat
+        Scanner in = new Scanner(System.in);
+        boolean quit = false;
+        char choice;
+        do
+        {
+            //Display a menu
+            displayMenu();
+            // read a choice
+            System.out.println("Enter a choice (q/Q) to exit => ");
+            choice = in.next().toUpperCase().charAt(0);
+            //process that choice
+            switch(choice)
+            {
+                case 'A':
+                    System.out.println("You have chosen to add a seat \n");
+                    addSeat(Train);
+                    break;
+                case 'E' : 
+                    System.out.println("You have chosen display empty seats. \n");
+                    //call the method that handles the choice E
+                    displayEmptySeats(Train);
+                    break;
+                //..... Cases for other choices
+                case 'V':
+                    System.out.println("You have chosen to view all seats \n");
+                    ViewAllSeats(Train);
+                    break;
+                case 'D': 
+                    System.out.println("You have chosen to remove a customer from a seat \n");
+                    deleteSeat(Train);
+                    break;
+                case 'F': 
+                    System.out.println("You have chosen to find a seat \n");
+                    findSeat(Train);
+                    break;
+                case 'S': 
+                    System.out.println("You have chosen to store the data \n");
+                    storeFile(Train);
+                    break;        
+                case 'L': 
+                    System.out.println("You have chosen to load the data \n");
+                    loadFile(Train);
+                    break;
+                case 'Q':
+                    System.out.println("You have chosen to exit the system \n");
+                    quit = true;
+                    break;
+                default: 
+                    System.out.println("looped again \n");
+                    System.out.println("You entered an invalid choice \n");
+            }    
+        
+            //until the user processes 'Q', while choice is not 'Q'
+        }  while (!quit);
+        
+        //Exit and farewell
+        System.out.println("Thank you for using our system. Good Bye! ");
+        
+    }
+
+    private static void displayMenu() 
+    {
+        System.out.println("----------------------------------------------------");
+        System.out.println("Welcome to my Train \n");
+        System.out.println("A: Assign Customer to seat \n");
+        System.out.println("E: Display empty seats \n");
+        System.out.println("D: Delete customer from seat \n");
+        System.out.println("F: Find seat for a given customer name \n");
+        System.out.println("S: Store program data in to a file \n");
+        System.out.println("L: Load program data from a file \n");
+        System.out.println("V: View all seats \n");
+        System.out.println("O: View seats Ordered alphabetically by name \n");
+    
+    }
+//This method loops through all the seats in the train and assigns each seat to "e"
+    private static void createSeats(String[] Train) {
+        for (int i = 0; i < Train.length; i++) {
+            Train[i]= "e";
+        }
+    }
+    
+    /*This method checks if there is already someone assigned to a seat number
+    if its empty then the seat can be occupied, but if it's not then no one can
+    book it. The seat number also has to be in the right range specified. */
+    private static void addSeat(String[] Train) 
+    {
+        Scanner input = new Scanner (System.in);
+        System.out.println("Enter name for seat: ");
+        String personName = input.next();
+        System.out.println("Enter seat number from 1-8: ");
+        int seatNum = input.nextInt();
+        if (seatNum >=1 && seatNum <=8)
+        {
+            if(Train[seatNum-1].equals("e"))
+            {
+                System.out.println("Welcome aboard " + personName + ",  your seat number is " + seatNum + "!" );
+                Train[seatNum-1] = personName;
+            }
+            else 
+            {
+                System.out.println("This seat is already occupied");
+            }
+        } 
+        else
+        {
+            System.out.println("You have not entered the right range");
+        }
+
+        
+    }  
+    /*goes through every element in the train array
+    if a seat is empty
+    display it*/  
+    private static void displayEmptySeats(String[] Train) 
+    {
+        for (int i = 0; i < Train.length; i++)
+        {
+            if (Train[i].equals ("e"))
+            {
+                System.out.println("Seat " + (i+1) + " is empty");
+            }
+        }
+        
+        
+    }
+
+    /*This method will delete a user at that specified seat, the seat must be in
+    the fixed range, if it is, that seat is assigned to "e".
+    
+    */
+    private static void deleteSeat(String[] Train) 
+    {
+        int seatNum;
+        Scanner input = new Scanner(System.in);
+        System.out.println("Which customer do you want removed? ");
+        seatNum = input.nextInt();
+        if (seatNum >=1 && seatNum <=8)
+        {
+            System.out.println("This customer has been removed from their seat");
+            Train[seatNum-1] = "e";
+        }
+        else
+        {
+            System.out.println("You have not entered the right range");
+        }   
+
+    }
+    /*This method allows for us to view all the seats, showing whether they're 
+    occupied or empty, it does this by looping through the elements of the array
+    */
+    private static void ViewAllSeats(String[] Train) 
+    {
+        for (int i = 0; i < Train.length; i++) 
+        {
+            System.out.println("Seat " + (i + 1) + " occupied by " + Train[i]);
+        }
+    }
+    /*This method uses an indefinite loop(while loop), also I declared a local 
+    variable which would break out of the indefinite loop, once the condition is
+    false. If the persons name that the user entered is the same as one of the 
+    seats on the train then this method will stop. 
+    
+    
+    */
+    private static void findSeat(String[] Train) 
+    {
+    Scanner input = new Scanner (System.in);
+    System.out.println("Enter name for customer: ");
+        String personName = input.next();
+        int i =0;
+        boolean found = false;
+        while(!found && i< WAITING_ROOM_CAPACITY) 
+        {
+            if(personName.equals(Train[i])) 
+            {
+            System.out.println(personName + " is at seat " + (i+1) + "");
+            found = true;       
+            }
+            i++;
+        }
+            if(!found) 
+            {
+            System.out.println("Person was not found");
+            }
+    }
+
+    private static void storeFile(String[] Train) 
+    {
+    //create file if it does not already exist
+    try 
+    {
+    Formatter f = new Formatter ("savedata.txt");
+    //save data to file
+    for(int i = 0; i< WAITING_ROOM_CAPACITY; i++) 
+    {
+    f.format("%s", Train[i] + "\n");
+    }
+    f.close();
+    }
+    catch(Exception e)
+    {
+    System.out.println("Error");
+    }
+    }
+
+    /*This method allows us to load a file that already has been saved, which
+    may contain customers. It uses a try and catch in order to prevent any 
+    errors from forming.
+    */
+    private static void loadFile(String[] Train) 
+    {
+    try 
+    {
+    File x = new File("savedata.txt");
+    Scanner sc = new Scanner(x);
+    int counter = 0;
+    while(sc.hasNext() && counter< WAITING_ROOM_CAPACITY) 
+    {
+    Train[counter] = sc.next();
+    counter++;
+    }
+    sc.close();
+    }catch(FileNotFoundException e)
+    {
+    System.out.println("file not found");
+    
+    }
+    }
+      
+      
+       
+    }
+    
+
+-------------------------------------------------------------------------------
+//second file called Passenger attached to TrainStation project
+
+
+package trainstation;
+
+
+public class Passenger 
+{
+    String firstName;
+    String surname;
+    int secondsInQueue;
+    
+    Passenger (String firstName, String surname)
+    {
+        this.firstName = firstName;
+        this.surname = surname;
+        secondsInQueue = 0;   
+    }
+    
+    String getName()
+    {
+        return firstName + "" + surname;
+    }
+    
+    public void setName (String firstName, String surname)
+    {
+        this.firstName = firstName;
+        this.surname = surname;
+    }        
+}
+
+-------------------------------------------------------------------------------
+
+third file called PassengerQueue
+
+package trainstation;
+
+
+public class PassengerQueue 
+{
+    private Passenger[] queueArray = new Passenger[TrainStation.WAITING_ROOM_CAPACITY];
+    private int first = 0;
+    private int last = 0;
+    private int maxStayInQueue = 0; 
+    private int maxLength = 0 ;
+
+    public void add(Passenger next)
+    {
+        //If the queue is not full
+
+        //add the next passenger
+
+        queueArray[last] = next;
+        last++;
+
+        //check the maxLength of the queue
+    }
+
+    public Passenger remove()
+    {
+        //If the queue array is not empty
+        //remove passenger
+        Passenger removedPassenger = queueArray[first];
+        first++;
+        //inform that no passengers (return null)
+        return removedPassenger;
+    }
+
+    public void display()
+    {
+        //list elements from first to last in the queue array
+        for(int i = first; i < last; i++)
+        {
+            queueArray[i].display();
+        }
+
+
+    }
+
+
+}
